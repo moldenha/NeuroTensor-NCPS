@@ -45,3 +45,7 @@ TensorGrad LSTMCell::forward(const TensorGrad &inputs,
 
 } // namespace ncps
 } // namespace nt
+
+
+_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::LSTMCell, nt__ncps__LSTMCell,
+                               input_map, input_map)

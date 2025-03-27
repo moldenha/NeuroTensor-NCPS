@@ -24,7 +24,7 @@ class LeCun : public Module {
 // a closed form continuous time cell
 
 class CfCCell : public Module {
-    static Layer make_backbone_activation(std::string backbone_activation); 
+    static Layer make_backbone_activation(std::string backbone_activation);
 
     void init_weights();
 
@@ -41,17 +41,11 @@ class CfCCell : public Module {
             double backbone_dropout = 0.0,
             Tensor sparsity_mask = Tensor::Null());
 
-    TensorGrad forward(TensorGrad input, TensorGrad hx, const Tensor &ts, TensorGrad& hx_out); 
+    TensorGrad forward(TensorGrad input, TensorGrad hx, const Tensor &ts,
+                       TensorGrad &hx_out);
 };
 
 } // namespace ncps
 } // namespace nt
-
-_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::CfCCell, nt__ncps__CfCCell, input_size,
-                               hidden_size, backbone_layers, mode,
-                               sparsity_mask, backbone,
-                               time_a, time_b, ff1_weight, ff1_bias, ff2_weight,
-                               ff2_bias, w_tau, A)
-_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::LeCun, nt__ncps__LeCun)
 
 #endif //_NT_LAYERS_NCPS_CFC_CELL_H_

@@ -104,3 +104,8 @@ TensorGrad LTC::forward(TensorGrad input, const TensorGrad& hx, Tensor timespan,
 
 }
 }
+
+_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::LTC, nt__ncps__LTC, lstm, rnn_cell,
+                               state_size, sensory_size, motor_size,
+                               output_size, synapse_count,
+                               sensory_synapse_count)

@@ -23,7 +23,5 @@ class LSTMCell : public Module {
 } // namespace ncps
 } // namespace nt
 
-_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::LSTMCell, nt__ncps__LSTMCell,
-                               input_map, input_map)
 
 #endif //_NT_LAYERS_NCPS_LSTM_CELL_H_

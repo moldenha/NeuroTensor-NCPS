@@ -1,10 +1,8 @@
 #include "cfc_cell.h"
 #include <stdexcept>
 
-namespace nt{
-namespace ncps{
-
-
+namespace nt {
+namespace ncps {
 
 Layer CfCCell::make_backbone_activation(std::string backbone_activation) {
     if (backbone_activation == "silu")
@@ -21,7 +19,6 @@ Layer CfCCell::make_backbone_activation(std::string backbone_activation) {
         throw std::invalid_argument("unknown activation ");
         return Layer(layers::Identity());
     }
-
 }
 
 void CfCCell::init_weights() {
@@ -35,23 +32,17 @@ void CfCCell::init_weights() {
     if (!w_tau.is_null()) {
         functional::xavier_uniform_(w_tau.tensor);
     }
-
 }
 
-
-CfCCell::CfCCell(int64_t input_size, int64_t hidden_size,
-        std::string mode,
-        std::string backbone_activation,
-        int64_t backbone_units , int64_t backbone_layers,
-        double backbone_dropout,
-        Tensor sparsity_mask)
-    : input_size(input_size), hidden_size(hidden_size),
-      mode(std::move(mode)),
-      sparsity_mask(sparsity_mask.is_null()
-                        ? sparsity_mask
-                        : sparsity_mask.to(DType::Float32)),
+CfCCell::CfCCell(int64_t input_size, int64_t hidden_size, std::string mode,
+                 std::string backbone_activation, int64_t backbone_units,
+                 int64_t backbone_layers, double backbone_dropout,
+                 Tensor sparsity_mask)
+    : input_size(input_size), hidden_size(hidden_size), mode(std::move(mode)),
+      sparsity_mask(sparsity_mask.is_null() ? sparsity_mask
+                                            : sparsity_mask.to(DType::Float32)),
       // backbone_activation(
-          // CfCCell::make_backbone_activation(backbone_activation)),
+      // CfCCell::make_backbone_activation(backbone_activation)),
       backbone_layers(backbone_layers),
       time_a(this->mode == "pure"
                  ? Layer(layers::Linear((backbone_layers == 0)
@@ -91,31 +82,28 @@ CfCCell::CfCCell(int64_t input_size, int64_t hidden_size,
             this->mode == "no_gate",
         "unknown mode for CfCCell, expected [default, pure, no_gate, got $",
         this->mode);
-    
+
     if (backbone_layers > 0) {
-        std::vector<Layer> layer_list = {Layer(layers::Linear(
-                                             input_size + hidden_size,
-                                             backbone_units)),
-                                         CfCCell::make_backbone_activation(backbone_activation)};
+        std::vector<Layer> layer_list = {
+            Layer(layers::Linear(input_size + hidden_size, backbone_units)),
+            CfCCell::make_backbone_activation(backbone_activation)};
 
         for (int64_t i = 1; i < backbone_layers; ++i) {
             layer_list.emplace_back(
-                layers::Linear(backbone_units, backbone_units)
-            );
-            layer_list.emplace_back(CfCCell::make_backbone_activation(backbone_activation));
+                layers::Linear(backbone_units, backbone_units));
+            layer_list.emplace_back(
+                CfCCell::make_backbone_activation(backbone_activation));
             if (backbone_dropout > 0.0) {
-                layer_list.emplace_back(
-                    layers::Dropout(backbone_dropout)
-                );
+                layer_list.emplace_back(layers::Dropout(backbone_dropout));
             }
         }
         this->backbone = Layer(layers::Sequential(std::move(layer_list)));
-
     }
     this->init_weights();
 }
 
-TensorGrad CfCCell::forward(TensorGrad input, TensorGrad hx, const Tensor &ts, TensorGrad& hx_out) {
+TensorGrad CfCCell::forward(TensorGrad input, TensorGrad hx, const Tensor &ts,
+                            TensorGrad &hx_out) {
 
     TensorGrad x_list = functional::list(input, hx);
     TensorGrad x = functional::cat(functional::list(input, hx), 1);
@@ -123,25 +111,27 @@ TensorGrad CfCCell::forward(TensorGrad input, TensorGrad hx, const Tensor &ts, T
         x = this->backbone(x);
     }
 
-    TensorGrad ff1 = ((!this->sparsity_mask.is_null())
-                          ? functional::matmult(x, this->ff1_weight *
-                                                       this->sparsity_mask)
-                          : functional::matmult(x, this->ff1_weight)) +
-                     this->ff1_bias;
+    TensorGrad ff1 =
+        ((!this->sparsity_mask.is_null())
+             ? functional::matmult(x, this->ff1_weight * this->sparsity_mask)
+             : functional::matmult(x, this->ff1_weight)) +
+        this->ff1_bias;
 
     if (this->mode == "pure") {
         TensorGrad new_hidden =
-            (-this->A * (-ts * (functional::abs(w_tau) +
-                                    functional::abs(ff1))).exp() * ff1 + this->A);
+            (-this->A *
+                 (-ts * (functional::abs(w_tau) + functional::abs(ff1))).exp() *
+                 ff1 +
+             this->A);
         hx_out = new_hidden;
         return new_hidden;
     }
     // Cfc
-    TensorGrad ff2 = ((!this->sparsity_mask.is_null())
-                          ? functional::matmult(x, this->ff2_weight *
-                                                       this->sparsity_mask)
-                          : functional::matmult(x, this->ff2_weight)) +
-                     this->ff2_bias;
+    TensorGrad ff2 =
+        ((!this->sparsity_mask.is_null())
+             ? functional::matmult(x, this->ff2_weight * this->sparsity_mask)
+             : functional::matmult(x, this->ff2_weight)) +
+        this->ff2_bias;
     ff1 = functional::tanh(ff1);
     ff2 = functional::tanh(ff2);
     TensorGrad t_a = this->time_a(ff1);
@@ -154,9 +144,13 @@ TensorGrad CfCCell::forward(TensorGrad input, TensorGrad hx, const Tensor &ts, T
     return new_hidden;
 }
 
-}
-}
+} // namespace ncps
+} // namespace nt
 
+_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::CfCCell, nt__ncps__CfCCell, input_size,
+                               hidden_size, backbone_layers, mode,
+                               sparsity_mask, backbone, time_a, time_b,
+                               ff1_weight, ff1_bias, ff2_weight, ff2_bias,
+                               w_tau, A)
 
-
-
+_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::LeCun, nt__ncps__LeCun)

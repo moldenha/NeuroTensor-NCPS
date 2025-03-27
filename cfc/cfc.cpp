@@ -1,12 +1,10 @@
 #include "cfc.h"
 #include "../../functional.h"
-namespace nt{
-namespace ncps{
-
-
+namespace nt {
+namespace ncps {
 
 TensorGrad CfC::forward(TensorGrad input, const TensorGrad &hx, Tensor timespan,
-                        TensorGrad& hx_out) {
+                        TensorGrad &hx_out) {
     DType dtype = input.dtype;
     bool is_batched = input.dims() == 3;
     int64_t batch_dim = (this->batch_first) ? 0 : 1;
@@ -26,8 +24,7 @@ TensorGrad CfC::forward(TensorGrad input, const TensorGrad &hx, Tensor timespan,
     if (hx.is_null()) {
         h_state = functional::zeros({batch_size, this->state_size}, dtype);
         if (this->use_mixed) {
-            c_state =
-                functional::zeros({batch_size, this->state_size}, dtype);
+            c_state = functional::zeros({batch_size, this->state_size}, dtype);
         }
     } else {
         if (this->use_mixed) {
@@ -67,11 +64,13 @@ TensorGrad CfC::forward(TensorGrad input, const TensorGrad &hx, Tensor timespan,
     TensorGrad inputs_split = input.transpose(0, seq_dim);
     inputs_split = inputs_split.split_axis(0);
 
-    Tensor timespans = (timespan.is_null()) ? Tensor(Scalar(1.0)) : timespan.split_axis(seq_dim);
-    std::vector<TensorGrad> output_sequence(seq_len, TensorGrad(Tensor::Null()));
+    Tensor timespans = (timespan.is_null()) ? Tensor(Scalar(1.0))
+                                            : timespan.split_axis(seq_dim);
+    std::vector<TensorGrad> output_sequence(seq_len,
+                                            TensorGrad(Tensor::Null()));
     for (int64_t t = 0; t < seq_len; ++t) {
-        Tensor ts = timespan.is_null() ? timespans
-                                       : timespans[t].item<Tensor>();
+        Tensor ts =
+            timespan.is_null() ? timespans : timespans[t].item<Tensor>();
 
         TensorGrad inputs = inputs_split[t];
         if (this->use_mixed) {
@@ -81,9 +80,9 @@ TensorGrad CfC::forward(TensorGrad input, const TensorGrad &hx, Tensor timespan,
         TensorGrad h_out = this->rnn_cell(inputs, h_state, ts, h_state);
         output_sequence[t] = h_out;
     }
-    if(this->return_sequences){
+    if (this->return_sequences) {
         readout = functional::stack(output_sequence, seq_dim);
-    }else{
+    } else {
         readout = this->fc(output_sequence.back());
     }
     if (!is_batched) {
@@ -91,11 +90,17 @@ TensorGrad CfC::forward(TensorGrad input, const TensorGrad &hx, Tensor timespan,
         hx_out = this->use_mixed ? functional::list(h_state[0], c_state[0])
                                  : h_state[0];
     } else {
-        hx_out =
-            this->use_mixed ? functional::list(std::move(h_state), std::move(c_state)) : std::move(h_state);
+        hx_out = this->use_mixed
+                     ? functional::list(std::move(h_state), std::move(c_state))
+                     : std::move(h_state);
     }
     return std::move(readout);
 }
 
-}
-}
+} // namespace ncps
+} // namespace nt
+
+_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::CfC, nt__ncps__CfC, input_size,
+                               proj_size, batch_first, return_sequences,
+                               wired_mode, rnn_cell, lstm, fc, state_size,
+                               output_size, use_mixed)

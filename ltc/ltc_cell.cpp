@@ -225,3 +225,6 @@ TensorGrad LTCCell::forward(TensorGrad inputs, TensorGrad &states,
 
 } // namespace ncps
 } // namespace nt
+
+_NT_REGISTER_LAYER_NAMESPACED_(nt::ncps::LTCCell, nt__ncps__LTCCell,
+                               sparsity_mask, sensory_sparsity_mask)
