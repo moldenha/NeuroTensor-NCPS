@@ -1,6 +1,7 @@
 #ifndef _NT_LAYERS_NCPS_WIRING_H_
 #define _NT_LAYERS_NCPS_WIRING_H_
 
+#include "../../../functional/functional.h"
 #include "../../../Tensor.h"
 #include "../../../intrusive_ptr/intrusive_ptr.hpp"
 // #include <xnetwork/classes/digraphs.hpp>
@@ -76,13 +77,13 @@ class Wiring : public intrusive_ptr_target{
 		// xnetwork::DiGraph get_graph(bool include_sensory_neurons = true) const; 
 		//Counts the number of synapses between internal neurons of the model
 		inline int64_t synapse_count() const {
-			return std::abs(this->adjacency_matrix).sum().toScalar().to<int64_t>();
+			return functional::abs(this->adjacency_matrix).sum().toScalar().to<int64_t>();
 		}
 		//Counts the number of synapses from the inputs (sensory neurons) to the internal neurons of the model
 		inline int64_t sensory_synapse_count() const {
             utils::THROW_EXCEPTION(!this->sensory_adjacency_matrix.is_null(),
                                    "Error, sensory adjacency matrix is null, not built");
-			return std::abs(this->sensory_adjacency_matrix).sum().toScalar().to<int64_t>();
+			return functional::abs(this->sensory_adjacency_matrix).sum().toScalar().to<int64_t>();
 			
 		}
 		inline int64_t get_input_dim() const noexcept {return this->input_dim.value_or(0);}

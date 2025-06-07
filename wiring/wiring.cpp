@@ -1,4 +1,5 @@
 #include "wiring.h"
+#include "../../../functional/functional.h"
 
 namespace nt {
 namespace ncps {
