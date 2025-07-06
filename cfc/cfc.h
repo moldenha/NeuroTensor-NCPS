@@ -13,7 +13,7 @@
 namespace nt {
 namespace ncps {
 
-class CfC : public Module {
+class NEUROTENSOR_API CfC : public Module {
     intrusive_ptr<Wiring> _wiring;
     int64_t units;
     template <typename T,

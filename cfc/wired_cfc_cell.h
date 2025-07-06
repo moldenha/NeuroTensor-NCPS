@@ -11,7 +11,7 @@
 namespace nt {
 namespace ncps {
 
-class WiredCfCCell : public Module {
+class NEUROTENSOR_API WiredCfCCell : public Module {
     intrusive_ptr<Wiring> _wiring;
     std::vector<Layer> _layers;
     int64_t num_layers;

@@ -10,7 +10,7 @@
 namespace nt {
 namespace ncps {
 
-class LTCCell : public Module {
+class NEUROTENSOR_API LTCCell : public Module {
     intrusive_ptr<Wiring> _wiring;
     Layer make_positive_fn, _clip;
     std::string _input_mapping, _output_mapping;

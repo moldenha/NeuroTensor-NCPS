@@ -4,7 +4,7 @@
 #include "../../../functional/functional.h"
 #include "../../../Tensor.h"
 #include "../../../intrusive_ptr/intrusive_ptr.hpp"
-// #include <xnetwork/classes/digraphs.hpp>
+// #include <xnetwork/class NEUROTENSOR_APIes/digraphs.hpp>
 #include <optional>
 #include <map>
 #include <cstdint>
@@ -20,7 +20,7 @@
 
 namespace nt{
 namespace ncps{
-class Wiring : public intrusive_ptr_target{
+class NEUROTENSOR_API Wiring : public intrusive_ptr_target{
 		Tensor adjacency_matrix, sensory_adjacency_matrix;
 	protected:
 		std::optional<int64_t> input_dim, output_dim;
@@ -97,7 +97,7 @@ class Wiring : public intrusive_ptr_target{
 
 };
 
-class FullyConnected final : public Wiring{
+class NEUROTENSOR_API FullyConnected final : public Wiring{
 	bool self_connections;
 	uint32_t _erev_init_seed;
 	std::mt19937 _rng;
@@ -120,7 +120,7 @@ class FullyConnected final : public Wiring{
 };
 
 
-class Random final : public Wiring{
+class NEUROTENSOR_API Random final : public Wiring{
 	uint32_t _random_seed;
 	double sparsity_level;
 	std::mt19937 _rng;
@@ -159,7 +159,7 @@ seed: The random seed used to generate the wiring
 
  */
 
-class NCP : public Wiring{
+class NEUROTENSOR_API NCP : public Wiring{
 	std::mt19937 _rng;
 	int64_t _num_inter_neurons, _num_command_neurons, _num_motor_neurons, _sensory_fanout,
 		_inter_fanout, _recurrent_command_synapses, _motor_fanin;
@@ -239,7 +239,7 @@ class NCP : public Wiring{
 
 };
 
-class AutoNCP final : public NCP{
+class NEUROTENSOR_API AutoNCP final : public NCP{
 	int64_t _output_size;
 	double _sparsity_level;
 	

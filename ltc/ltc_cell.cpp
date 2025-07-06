@@ -189,7 +189,7 @@ void LTCCell::_map_inputs(TensorGrad &inputs) {
 TensorGrad LTCCell::_map_outputs(const TensorGrad &state) {
     TensorGrad output = state;
     if (this->motor_size() < this->state_size()) {
-        output = output.transpose(0, 1)[my_range(0, this->motor_size())].transpose(0, 1).contiguous();
+        output = output.transpose(0, 1)[0 <range> this->motor_size()].transpose(0, 1).contiguous();
     }
     if (this->_output_mapping == "affine" ||
         this->_output_mapping == "linear") {

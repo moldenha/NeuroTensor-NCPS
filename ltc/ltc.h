@@ -22,7 +22,7 @@ namespace ncps {
 //  current time sequence (can be Tensor::Null()) Param: hx_out: a reference
 //  TensorGrad to store the final hidden state Output: readout: final out state
 //  of the RNN
-class LTC : public Module {
+class NEUROTENSOR_API LTC : public Module {
     intrusive_ptr<Wiring> _wiring;
     int64_t input_size;
     bool batch_first, return_sequences, use_mixed;

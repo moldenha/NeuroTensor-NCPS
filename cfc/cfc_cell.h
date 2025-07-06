@@ -12,7 +12,7 @@
 namespace nt {
 namespace ncps {
 
-class LeCun : public Module {
+class NEUROTENSOR_API LeCun : public Module {
   public:
     LeCun() {}
     inline TensorGrad forward(TensorGrad x) {
@@ -23,7 +23,7 @@ class LeCun : public Module {
 }; // LeCun
 // a closed form continuous time cell
 
-class CfCCell : public Module {
+class NEUROTENSOR_API CfCCell : public Module {
     static Layer make_backbone_activation(std::string backbone_activation);
 
     void init_weights();

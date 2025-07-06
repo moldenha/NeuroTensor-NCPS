@@ -8,7 +8,7 @@
 namespace nt {
 namespace ncps {
 
-class LSTMCell : public Module {
+class NEUROTENSOR_API LSTMCell : public Module {
     int64_t input_size, hidden_size;
     void init_weights(); 
 
