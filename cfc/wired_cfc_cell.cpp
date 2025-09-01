@@ -77,7 +77,7 @@ std::vector<int64_t> WiredCfCCell::layer_sizes() {
 
 TensorGrad WiredCfCCell::forward(TensorGrad input, TensorGrad hx,
                                  Tensor timespans, TensorGrad &hx_out) {
-    TensorGrad h_state = functional::split(hx, this->layer_sizes(), 1);
+    TensorGrad h_state = functional::split(hx, 1, this->layer_sizes());
 
     std::vector<TensorGrad> new_h_state(this->num_layers,
                                         TensorGrad(Tensor::Null()));
@@ -90,7 +90,7 @@ TensorGrad WiredCfCCell::forward(TensorGrad input, TensorGrad hx,
     // this prints true, indicating that the actual memory in hx is modified
     // this makes doing a concatenation just an operation that would take extra
     // time std::cout << std::boolalpha << (hx.data_ptr() ==
-    // h_state[0].tensor.data_ptr()) <<
+    // h_state[0].detach().data_ptr()) <<
     //     std::noboolalpha << std::endl;
     // the shape state that is outputted from a cfc_cell stays the same
     // therefore there is no reason to do a concatenation or anything like that

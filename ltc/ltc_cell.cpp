@@ -204,13 +204,13 @@ TensorGrad LTCCell::_map_outputs(const TensorGrad &state) {
 void LTCCell::apply_weight_constraints() {
     if (!this->_implicit_param_constraints) {
         // softplus when in implicit mode
-        this->_params.at("w").tensor = functional::relu(this->_params.at("w").tensor);
-        this->_params.at("sensory_w").tensor =
-            functional::relu(this->_params.at("sensory_w").tensor);
-        this->_params.at("cm").tensor =
-            functional::relu(this->_params.at("cm").tensor);
-        this->_params.at("gleak").tensor =
-            functional::relu(this->_params.at("gleak").tensor);
+        this->_params.at("w").detach() = functional::relu(this->_params.at("w").detach());
+        this->_params.at("sensory_w").detach() =
+            functional::relu(this->_params.at("sensory_w").detach());
+        this->_params.at("cm").detach() =
+            functional::relu(this->_params.at("cm").detach());
+        this->_params.at("gleak").detach() =
+            functional::relu(this->_params.at("gleak").detach());
     }
 }
 

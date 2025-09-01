@@ -13,16 +13,16 @@ LSTMCell::LSTMCell(int64_t input_size, int64_t hidden_size)
 void LSTMCell::init_weights() {
     for (auto &w : this->input_map.parameters()) {
         if (w.dims() == 1) {
-            w.tensor = functional::rand(-0.1, 0.1, w.shape(), w.tensor.dtype);
+            w.detach() = functional::rand(-0.1, 0.1, w.shape(), w.detach().dtype());
         } else {
-            functional::xavier_uniform_(w.tensor);
+            functional::xavier_uniform_(w.detach());
         }
     }
     for (auto &w : this->recurrent_map.parameters()) {
         if (w.dims() == 1) {
-            w.tensor = functional::rand(-0.1, 0.1, w.shape(), w.tensor.dtype);
+            w.detach() = functional::rand(-0.1, 0.1, w.shape(), w.detach().dtype());
         } else {
-            w.tensor = functional::rand(0.0, 1.0, w.shape(), w.tensor.dtype);
+            w.detach() = functional::rand(0.0, 1.0, w.shape(), w.detach().dtype());
         }
     }
 }

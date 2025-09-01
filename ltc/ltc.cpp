@@ -5,7 +5,7 @@ namespace ncps{
 
 TensorGrad LTC::forward(TensorGrad input, const TensorGrad& hx, Tensor timespan,
                    TensorGrad &hx_out) {
-    DType dtype = input.dtype;
+    DType dtype = input.dtype();
     bool is_batched = input.dims() == 3;
     int64_t batch_dim = (this->batch_first) ? 0 : 1;
     int64_t seq_dim = (this->batch_first) ? 1 : 0;
@@ -30,19 +30,19 @@ TensorGrad LTC::forward(TensorGrad input, const TensorGrad& hx, Tensor timespan,
     } else {
         if (this->use_mixed) {
             utils::THROW_EXCEPTION(
-                hx.dtype == DType::TensorObj && hx.numel() == 2,
+                hx.dtype() == DType::TensorObj && hx.numel() == 2,
                 "Running a CfC with mixed_memory=true, requires a tensor "
                 "obj of 2 tensors (h0, c0) to be passed as state but got a "
                 "tensor of dtype $ instead",
-                hx.dtype);
+                hx.dtype());
             h_state = hx[0];
             c_state = hx[1];
         } else {
             utils::THROW_EXCEPTION(
-                hx.dtype == dtype,
+                hx.dtype() == dtype,
                 "Expected when Running a CfC with mixed_memory=false, a "
                 "dtype same as input of $ but fot $",
-                dtype, hx.dtype);
+                dtype, hx.dtype());
             h_state = hx;
         }
         if (is_batched) {

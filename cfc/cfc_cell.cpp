@@ -22,15 +22,15 @@ Layer CfCCell::make_backbone_activation(std::string backbone_activation) {
 }
 
 void CfCCell::init_weights() {
-    functional::xavier_uniform_(ff1_weight.tensor);
-    functional::xavier_uniform_(ff1_bias.tensor);
-    functional::xavier_uniform_(ff2_weight.tensor);
-    functional::xavier_uniform_(ff2_bias.tensor);
+    functional::xavier_uniform_(ff1_weight.detach());
+    functional::xavier_uniform_(ff1_bias.detach());
+    functional::xavier_uniform_(ff2_weight.detach());
+    functional::xavier_uniform_(ff2_bias.detach());
     if (!A.is_null()) {
-        functional::xavier_uniform_(this->A.tensor);
+        functional::xavier_uniform_(this->A.detach());
     }
     if (!w_tau.is_null()) {
-        functional::xavier_uniform_(w_tau.tensor);
+        functional::xavier_uniform_(w_tau.detach());
     }
 }
 
